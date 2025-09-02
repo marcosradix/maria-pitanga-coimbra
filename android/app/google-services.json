@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "780940930307",
+    "project_id": "maria-pitanga-e5e82",
+    "storage_bucket": "maria-pitanga-e5e82.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780940930307:android:803643cf600ac781e94d36",
+        "android_client_info": {
+          "package_name": "pt.workmade.maria_pitanga"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrCT6yAa06vMShUCnF5JXAod6gAQT4RGU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
