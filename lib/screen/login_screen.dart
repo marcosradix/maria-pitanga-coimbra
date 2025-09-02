@@ -140,11 +140,14 @@ class LoginPage extends StatelessWidget {
                               }
                             });
                       } on FirebaseException catch (e) {
-                        Get.snackbar(
-                          "Erro",
-                          "Erro ao fazer login: ${e.message}",
-                          backgroundColor: Colors.red,
-                          snackPosition: SnackPosition.BOTTOM,
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(
+                              "Erro ao fazer login",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
                         );
                         print('FirebaseException: ${e.message}');
                       }
