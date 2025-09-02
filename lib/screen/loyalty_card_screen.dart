@@ -179,7 +179,7 @@ class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
             ),
             const SizedBox(height: 4),
             const Text(
-              "R. Carlos Alberto Pinto de Abreu, 31\n3040-245 Coimbra, Portugal",
+              "Av. João das Regras, 139\n3040-256 Coimbra, Portugal",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 12),
             ),
