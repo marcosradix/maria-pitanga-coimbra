@@ -16,7 +16,7 @@ class LoginPage extends StatelessWidget {
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     SecureStorageService secureStorageService = SecureStorageService();
-    final DatabaseReference _dbRef = FirebaseDatabase.instanceFor(
+    final DatabaseReference dbRef = FirebaseDatabase.instanceFor(
       app: Firebase.app(),
       databaseURL:
           "https://maria-pitanga-e5e82-default-rtdb.europe-west1.firebasedatabase.app",
@@ -85,54 +85,69 @@ class LoginPage extends StatelessWidget {
                       textStyle: TextStyle(fontSize: 18),
                     ),
                     onPressed: () async {
-                      await authService
-                          .login(emailController.text, passwordController.text)
-                          .then((value) async {
-                            if (value != null) {
-                              secureStorageService.addNewItem(
-                                "email",
-                                value.user?.email ?? '',
-                              );
-                              await _dbRef
-                                  .child(
-                                    Base64Utils.encode(value.user?.email ?? ''),
-                                  )
-                                  .get()
-                                  .then((snapshot) {
-                                    try {
-                                      if (snapshot.exists) {
-                                        print(snapshot.child("phone").value);
-                                        secureStorageService.addNewItem(
-                                          "phone",
-                                          snapshot.child("phone").value
-                                              as String,
-                                        );
-                                      }
-                                      if (value.user?.email ==
-                                          "mariapitangacoimbra@gmail.com") {
-                                        Get.offNamed('/card_adm');
-                                      } else {
-                                        Get.offNamed('/card');
-                                      }
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          backgroundColor: Colors.red,
-                                          content: Text(
-                                            "Erro ao fazer login",
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                      try {
+                        await authService
+                            .login(
+                              emailController.text,
+                              passwordController.text,
+                            )
+                            .then((value) async {
+                              if (value != null) {
+                                secureStorageService.addNewItem(
+                                  "email",
+                                  value.user?.email ?? '',
+                                );
+                                await dbRef
+                                    .child(
+                                      Base64Utils.encode(
+                                        value.user?.email ?? '',
+                                      ),
+                                    )
+                                    .get()
+                                    .then((snapshot) {
+                                      try {
+                                        if (snapshot.exists) {
+                                          print(snapshot.child("phone").value);
+                                          secureStorageService.addNewItem(
+                                            "phone",
+                                            snapshot.child("phone").value
+                                                as String,
+                                          );
+                                        }
+                                        if (value.user?.email ==
+                                            "mariapitangacoimbra@gmail.com") {
+                                          Get.offNamed('/card_adm');
+                                        } else {
+                                          Get.offNamed('/card');
+                                        }
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                              "Erro ao fazer login",
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                      print('Error retrieving phone: $e');
-                                    }
-                                  });
-                            }
-                          });
+                                        );
+                                        print('Error retrieving phone: $e');
+                                      }
+                                    });
+                              }
+                            });
+                      } on FirebaseException catch (e) {
+                        Get.snackbar(
+                          "Erro",
+                          "Erro ao fazer login: ${e.message}",
+                          backgroundColor: Colors.red,
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                        print('FirebaseException: ${e.message}');
+                      }
                     },
                     child: Text(
                       'Entrar',
