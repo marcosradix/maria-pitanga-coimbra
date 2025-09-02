@@ -9,7 +9,8 @@ class AdmAuthGuard extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     bool isAdmin =
-        FirebaseAuth.instance.currentUser?.email == "admin@mariapitanga.com";
+        FirebaseAuth.instance.currentUser?.email ==
+        "mariapitangacoimbra@gmail.com";
     if (!isAdmin) {
       return RouteSettings(name: '/card');
     }

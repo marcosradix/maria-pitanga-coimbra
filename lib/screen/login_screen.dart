@@ -109,7 +109,7 @@ class LoginPage extends StatelessWidget {
                                         );
                                       }
                                       if (value.user?.email ==
-                                          "admin@mariapitanga.com") {
+                                          "mariapitangacoimbra@gmail.com") {
                                         Get.offNamed('/card_adm');
                                       } else {
                                         Get.offNamed('/card');
