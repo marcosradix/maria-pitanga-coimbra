@@ -35,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _showPrivacyPolicy() {
-    const contactEmail = "contacto@mariapitanga.com";
+    const contactEmail = "mariapitangacoimbra@gmail.com";
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -44,7 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
           child: const Text('''
 A presente Política de Privacidade explica como recolhemos, utilizamos e protegemos os seus dados pessoais, em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD).
 
-1. Responsável: Maria Pitanga Coimbra
+1. Responsável: Textura Frutifera UNIP. LDA
 2. Dados recolhidos: Nome, Email, Telefone
 3. Finalidade: Gestão de contactos, comunicações e serviços
 4. Direitos: Acesso, retificação, apagamento, oposição, portabilidade
@@ -52,11 +52,11 @@ A presente Política de Privacidade explica como recolhemos, utilizamos e proteg
 
 Ao prosseguir, está a consentir com a recolha e tratamento dos dados acima descritos.
 
-A presente Política de Privacidade explica como recolhemos, utilizamos e protegemos os seus dados pessoais, em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD) – Regulamento (UE) 2016/679.
+A presente Política de Privacidade explica como recolhemos, utilizamos e protegemos os seus dados pessoais, em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD) - Regulamento (UE) 2016/679.
 
 1. Responsável pelo Tratamento dos Dados
 
-A responsabilidade pelo tratamento dos seus dados pessoais é da [Nome da Empresa], com sede em [Morada da Empresa], podendo ser contactada através do e-mail [email da empresa].
+A responsabilidade pelo tratamento dos seus dados pessoais é da Textura Frutifera UNIP. LDA, com sede em avinida joão das regras 139, coimbra, podendo ser contactada através do e-mail mariapitangacoimbra@gmail.com.
 
 2. Dados Pessoais Recolhidos
 

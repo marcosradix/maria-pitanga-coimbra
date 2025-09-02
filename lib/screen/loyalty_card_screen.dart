@@ -4,11 +4,13 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:maria_pitanga/model/card_model.dart';
 import 'package:maria_pitanga/model/my_card_model.dart';
 import 'package:maria_pitanga/services/auth_service.dart';
+import 'package:maria_pitanga/utils/whats_app_utils.dart';
 
 class LoyaltyCardScreen extends StatefulWidget {
   const LoyaltyCardScreen({super.key});
@@ -184,10 +186,27 @@ class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
               style: TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 6),
-            const Text(
-              "@mariapitangacoimbra | +351 926 434 534",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12),
+            GestureDetector(
+              onTap: () => WhatsAppUtils.openWhatsApp(
+                phoneNumber: "+351926434534",
+                message: "Olá",
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.whatsapp,
+                    size: 16,
+                    color: Color(0xFF25D366),
+                  ),
+                  SizedBox(width: 4),
+                  const Text(
+                    "@mariapitangacoimbra | +351 926 434 534",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10),
           ],
