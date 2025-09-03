@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:maria_pitanga/model/card_model.dart';
 import 'package:maria_pitanga/model/my_card_model.dart';
 
@@ -76,7 +77,7 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
           SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              "Usuário ${searchController.text} não encontrado.",
+              "O cartão para o número ${searchController.text} está vazio.",
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -123,8 +124,6 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                           .toJson(),
                     );
 
-                priceController.clear();
-                gramsController.clear();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: Colors.purple,
@@ -134,6 +133,8 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                     ),
                   ),
                 );
+                priceController.clear();
+                gramsController.clear();
               },
               icon: const Icon(Icons.save, size: 30),
               color: Colors.white,
@@ -254,6 +255,9 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                               stamped: !stamped,
                               price: int.tryParse(priceController.text),
                               grams: int.tryParse(gramsController.text),
+                            );
+                            SystemChannels.textInput.invokeMethod(
+                              'TextInput.hide',
                             );
                           });
                         },
