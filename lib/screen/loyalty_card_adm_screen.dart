@@ -112,8 +112,8 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              onPressed: () {
-                _dbRef
+              onPressed: () async {
+                await _dbRef
                     .child(searchController.text)
                     .set(
                       cardData

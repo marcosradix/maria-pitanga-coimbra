@@ -138,14 +138,14 @@ Poderemos atualizar esta Política de Privacidade sempre que necessário, sendo 
     // Aqui pode navegar para outra página ou guardar no storage que o utilizador aceitou
   }
 
-  void _salvar() {
+  void _salvar() async {
     if (_formKey.currentState!.validate() && accepted) {
       // Form is valid, proceed further
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
       final phone = _phoneController.text.trim();
 
-      authService.register(email, password).then((data) {
+      await authService.register(email, password).then((data) {
         if (data != null) {
           _dbRef
               .child(Base64Utils.encode(email))
