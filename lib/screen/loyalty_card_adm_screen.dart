@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/route_manager.dart';
 import 'package:maria_pitanga/model/card_model.dart';
 import 'package:maria_pitanga/model/my_card_model.dart';
 
@@ -122,19 +123,27 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                             id: DateTime.now().millisecondsSinceEpoch,
                           )
                           .toJson(),
-                    );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.purple,
-                    content: Text(
-                      "Salvo! Preço: €${priceController.text}, Gramas: ${gramsController.text}",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                );
-                priceController.clear();
-                gramsController.clear();
+                    )
+                    .then((response) {
+                      Get.snackbar(
+                        "Sucesso",
+                        "Salvo! Preço: €${priceController.text}, Gramas: ${gramsController.text}",
+                        backgroundColor: Colors.purple,
+                        colorText: Colors.white,
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      priceController.clear();
+                      gramsController.clear();
+                    })
+                    .catchError((error) {
+                      Get.snackbar(
+                        "Error",
+                        "Error ao salvar dados",
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    });
               },
               icon: const Icon(Icons.save, size: 30),
               color: Colors.white,
