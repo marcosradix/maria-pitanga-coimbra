@@ -34,4 +34,43 @@ class AuthService {
       return null;
     }
   }
+
+  Future<void> onDeletePressed() async {
+    final user = _auth.currentUser;
+
+    if (user == null) return;
+
+    try {
+      // Try direct delete
+      await user.delete();
+      // Optionally: await FirebaseAuth.instance.signOut();
+      // Show success message
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        // Show a dialog or route to a re-auth screen,
+        // then call the appropriate reauth+delete method above.
+      } else {
+        // Show error
+      }
+    }
+  }
+
+  Future<String?> sendResetEmail(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      return null; // success
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'invalid-email':
+          return 'E-mail inválido';
+        case 'user-not-found':
+          // Consider a generic message to avoid user enumeration:
+          return 'Se o e-mail existe, você vai receber um link de reset de senha.';
+        case 'too-many-requests':
+          return 'Tente novamente mais tarde, você já tentou mauitas vezes.';
+        default:
+          return 'Algo deu errado, tente novamente.';
+      }
+    }
+  }
 }
