@@ -176,29 +176,16 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
       floatingActionButton: FloatingActionButton(
         tooltip: "Reiniciar",
         onPressed: () {
-          setState(() {
-            stamps = List.generate(
-              10,
-              (index) => CardModel(
-                stamped: false,
-                price: null,
-                grams: null,
-                index: index,
-              ),
-            );
-            _dbRef
-                .child(searchController.text)
-                .set(cardData.copyWith(stamps: stamps).toJson());
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.purple,
-                content: Text(
-                  "Cartão reiniciado e pronto para novos carimbos!",
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            );
-          });
+          Get.defaultDialog(
+            title: "Limpar cartão",
+            middleText: "Está certo que vai limpar este cartão ?",
+            textConfirm: "Sim",
+            textCancel: "Não",
+            confirmTextColor: Colors.white,
+            onConfirm: () => setState(() {
+              clearCard(context);
+            }),
+          );
         },
         backgroundColor: Colors.purple,
         child: const Icon(Icons.refresh, color: Colors.white),
@@ -391,5 +378,28 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
         ),
       ),
     );
+  }
+
+  void clearCard(BuildContext context) {
+    if (searchController.text.isNotEmpty) {
+      stamps = List.generate(
+        10,
+        (index) =>
+            CardModel(stamped: false, price: null, grams: null, index: index),
+      );
+      _dbRef
+          .child(searchController.text)
+          .set(cardData.copyWith(stamps: stamps).toJson());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.purple,
+          content: Text(
+            "Cartão reiniciado e pronto para novos carimbos!",
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+      Navigator.pop(context);
+    }
   }
 }

@@ -146,13 +146,16 @@ Poderemos atualizar esta Política de Privacidade sempre que necessário, sendo 
       final phone = _phoneController.text.trim();
 
       await authService.register(email, password).then((data) {
-        if (data != null) {
+        final user = data!.user;
+        if (user != null && !user.emailVerified) {
           _dbRef
               .child(Base64Utils.encode(email))
               .set({"phone": phone, "privacyPolicy": accepted})
               .catchError((error) {
                 Get.snackbar("Erro", "Erro ao salvar dados");
               });
+
+          user.sendEmailVerification();
 
           ScaffoldMessenger.of(context)
               .showSnackBar(

@@ -15,12 +15,12 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    ).whenComplete(() => debugPrint('FIREBASE INITIALIZED WEB==============>'));
+    ).whenComplete(() => debugPrint('INITIALIZED WEB==============>'));
   } else {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
       name: "MariaPitangaCoimbra",
-    ).whenComplete(() => debugPrint('FIREBASE INITIALIZED================>'));
+    ).whenComplete(() => debugPrint('INITIALIZED================>'));
   }
 
   runApp(const MyApp());
