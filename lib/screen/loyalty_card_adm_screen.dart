@@ -44,9 +44,24 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
 
   bool isLoading = false;
   late MyCardModel cardData;
-
+  int? selectedIndex = -1;
   @override
   void initState() {
+    priceController.addListener(() {
+      if (selectedIndex != -1 && priceController.text != "") {
+        stamps[selectedIndex!] = stamps[selectedIndex!].copyWith(
+          price: int.tryParse(priceController.text),
+        );
+      }
+    });
+
+    gramsController.addListener(() {
+      if (selectedIndex != -1 && gramsController.text != "") {
+        stamps[selectedIndex!] = stamps[selectedIndex!].copyWith(
+          grams: int.tryParse(gramsController.text),
+        );
+      }
+    });
     if (stamps.isEmpty) {
       stamps = List.generate(
         10,
@@ -260,6 +275,7 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                       return InkWell(
                         onTap: () {
                           setState(() {
+                            selectedIndex = index;
                             stamps[index] = stamps[index].copyWith(
                               stamped: !stamped,
                               price: int.tryParse(priceController.text),
