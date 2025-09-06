@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:maria_pitanga/routes/app_pages.dart';
 import 'package:maria_pitanga/services/auth_service.dart';
 import 'package:maria_pitanga/services/secure_storage.dart';
 import 'package:maria_pitanga/utils/base64_utils.dart';
@@ -178,9 +179,9 @@ class _LoginPageState extends State<LoginPage> {
                                         }
                                         if (value.user?.email ==
                                             "mariapitangacoimbra@gmail.com") {
-                                          Get.offNamed('/card_adm');
+                                          Get.offNamed(Routes.CARD_ADM);
                                         } else {
-                                          Get.offNamed('/card');
+                                          Get.offNamed(Routes.CARD);
                                         }
                                       } catch (e) {
                                         ScaffoldMessenger.of(

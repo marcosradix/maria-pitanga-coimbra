@@ -14,4 +14,5 @@ abstract class Routes {
   static String get ACCESS_RATCHET => '/access_ratchet';
   static String get COMPLETE_PROFILE_PAGE => '/completeprofile';
   static String get SIGN_UP => "/sign_up";
+  static String get CUSTOM_ACAI => "/custom_acai";
 }
