@@ -48,17 +48,21 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
   @override
   void initState() {
     priceController.addListener(() {
-      if (selectedIndex != -1 && priceController.text != "") {
+      if (selectedIndex != -1 && priceController.text.isNotEmpty) {
         stamps[selectedIndex!] = stamps[selectedIndex!].copyWith(
-          price: int.tryParse(priceController.text),
+          price: priceController.text.isNotEmpty
+              ? int.tryParse(priceController.text)
+              : 0,
         );
       }
     });
 
     gramsController.addListener(() {
-      if (selectedIndex != -1 && gramsController.text != "") {
+      if (selectedIndex != -1 && gramsController.text.isNotEmpty) {
         stamps[selectedIndex!] = stamps[selectedIndex!].copyWith(
-          grams: int.tryParse(gramsController.text),
+          grams: gramsController.text.isNotEmpty
+              ? int.tryParse(gramsController.text)
+              : 0,
         );
       }
     });
@@ -265,8 +269,12 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
                             selectedIndex = index;
                             stamps[index] = stamps[index].copyWith(
                               stamped: !stamped,
-                              price: int.tryParse(priceController.text),
-                              grams: int.tryParse(gramsController.text),
+                              price: priceController.text.isNotEmpty
+                                  ? int.tryParse(priceController.text)
+                                  : 0,
+                              grams: gramsController.text.isNotEmpty
+                                  ? int.tryParse(gramsController.text)
+                                  : 0,
                             );
                             SystemChannels.textInput.invokeMethod(
                               'TextInput.hide',
