@@ -149,7 +149,7 @@ Poderemos atualizar esta Política de Privacidade sempre que necessário, sendo 
         final user = data!.user;
         if (user != null && !user.emailVerified) {
           _dbRef
-              .child(Base64Utils.encode(email))
+              .child(Base64Utils.encode(email.toLowerCase()))
               .set({"phone": phone, "privacyPolicy": accepted})
               .catchError((error) {
                 Get.snackbar("Erro", "Erro ao salvar dados");
