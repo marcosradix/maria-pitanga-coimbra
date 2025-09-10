@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:maria_pitanga/components/login_button.dart';
 import 'package:maria_pitanga/services/auth_service.dart';
 import 'package:maria_pitanga/services/secure_storage.dart';
 import 'package:maria_pitanga/utils/base64_utils.dart';
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     final TextEditingController emailResetPasswordController =
         TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final loginFormKey = GlobalKey<FormState>();
 
     void showResetPasswordDialog() {
       Get.defaultDialog(
@@ -116,39 +118,63 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 40),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.purple),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Senha',
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.purple),
-                    ),
+                Form(
+                  key: loginFormKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.purple),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "O e-mail é obrigatório";
+                          }
+                          // Regex simples para validar e-mail
+                          if (!RegExp(
+                            r"^[\w\.-]+@[\w\.-]+\.\w+$",
+                          ).hasMatch(value)) {
+                            return "Digite um e-mail válido";
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          border: OutlineInputBorder(),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.purple),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "A senha é obrigatória";
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      textStyle: TextStyle(fontSize: 18),
-                    ),
+                  child: LoadingButton(
+                    text: "Entrar",
                     onPressed: () async {
                       try {
+                        if (!loginFormKey.currentState!.validate()) {
+                          return;
+                        }
                         await authService
                             .login(
                               emailController.text,
@@ -216,10 +242,6 @@ class _LoginPageState extends State<LoginPage> {
                         debugPrint('FirebaseException: ${e.message}');
                       }
                     },
-                    child: Text(
-                      'Entrar',
-                      style: TextStyle(color: Colors.white, fontSize: 25),
-                    ),
                   ),
                 ),
                 SizedBox(height: 10),
