@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:maria_pitanga/components/login_button.dart';
+import 'package:maria_pitanga/constants/constants_data.dart';
 import 'package:maria_pitanga/services/auth_service.dart';
 import 'package:maria_pitanga/services/secure_storage.dart';
 import 'package:maria_pitanga/utils/base64_utils.dart';
@@ -24,8 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     SecureStorageService secureStorageService = SecureStorageService();
     final DatabaseReference dbRef = FirebaseDatabase.instanceFor(
       app: Firebase.app(),
-      databaseURL:
-          "https://maria-pitanga-e5e82-default-rtdb.europe-west1.firebasedatabase.app",
+      databaseURL: ConstantsData.firebaseUrl,
     ).ref("auth_data");
     final TextEditingController emailResetPasswordController =
         TextEditingController();
@@ -90,176 +90,178 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        // Added to ensure content scrolls if needed
         child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Circle with image at the top center
-                Padding(
-                  padding: const EdgeInsets.only(top: 60.0, bottom: 20.0),
-                  child: CircleAvatar(
-                    radius: 80,
-                    backgroundImage: AssetImage(
-                      'assets/images/maria.jpeg',
-                    ), // Make sure you have this image in your assets
-                    backgroundColor: Colors.grey[200],
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 400),
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Circle with image at the top center
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60.0, bottom: 20.0),
+                    child: CircleAvatar(
+                      radius: 80,
+                      backgroundImage: AssetImage(
+                        'assets/images/maria.jpeg',
+                      ), // Make sure you have this image in your assets
+                      backgroundColor: Colors.grey[200],
+                    ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Bem-vindo de volta',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple,
+                  SizedBox(height: 20),
+                  Text(
+                    'Bem-vindo de volta',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
                   ),
-                ),
-                SizedBox(height: 40),
-                Form(
-                  key: loginFormKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.purple),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "O e-mail é obrigatório";
-                          }
-                          // Regex simples para validar e-mail
-                          if (!RegExp(
-                            r"^[\w\.-]+@[\w\.-]+\.\w+$",
-                          ).hasMatch(value)) {
-                            return "Digite um e-mail válido";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.purple),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "A senha é obrigatória";
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: LoadingButton(
-                    text: "Entrar",
-                    onPressed: () async {
-                      try {
-                        if (!loginFormKey.currentState!.validate()) {
-                          return;
-                        }
-                        await authService
-                            .login(
-                              emailController.text,
-                              passwordController.text,
-                            )
-                            .then((value) async {
-                              if (value != null) {
-                                secureStorageService.addNewItem(
-                                  "email",
-                                  value.user?.email ?? '',
-                                );
-                                await dbRef
-                                    .child(
-                                      Base64Utils.encode(
-                                        value.user?.email ?? '',
-                                      ),
-                                    )
-                                    .get()
-                                    .then((snapshot) {
-                                      try {
-                                        if (snapshot.exists) {
-                                          secureStorageService.addNewItem(
-                                            "phone",
-                                            snapshot.child("phone").value
-                                                as String,
-                                          );
-                                        }
-                                        if (value.user?.email ==
-                                            "mariapitangacoimbra@gmail.com") {
-                                          Get.offNamed('/card_adm');
-                                        } else {
-                                          Get.offNamed('/card');
-                                        }
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content: Text(
-                                              "Erro ao fazer login",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                        debugPrint(
-                                          'Error retrieving phone: $e',
-                                        );
-                                      }
-                                    });
-                              }
-                            });
-                      } on FirebaseException catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: Colors.red,
-                            content: Text(
-                              "Erro ao fazer login",
-                              style: const TextStyle(color: Colors.white),
+                  SizedBox(height: 40),
+                  Form(
+                    key: loginFormKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.purple),
                             ),
                           ),
-                        );
-                        debugPrint('FirebaseException: ${e.message}');
-                      }
-                    },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "O e-mail é obrigatório";
+                            }
+                            // Regex simples para validar e-mail
+                            if (!RegExp(
+                              r"^[\w\.-]+@[\w\.-]+\.\w+$",
+                            ).hasMatch(value)) {
+                              return "Digite um e-mail válido";
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'Senha',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.purple),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "A senha é obrigatória";
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: showResetPasswordDialog,
-                  child: Text(
-                    'Esqueceu a senha?',
-                    style: TextStyle(color: Colors.green, fontSize: 18),
+                  SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: LoadingButton(
+                      text: "Entrar",
+                      onPressed: () async {
+                        try {
+                          if (!loginFormKey.currentState!.validate()) {
+                            return;
+                          }
+                          await authService
+                              .login(
+                                emailController.text,
+                                passwordController.text,
+                              )
+                              .then((value) async {
+                                if (value != null) {
+                                  secureStorageService.addNewItem(
+                                    "email",
+                                    value.user?.email ?? '',
+                                  );
+                                  await dbRef
+                                      .child(
+                                        Base64Utils.encode(
+                                          value.user?.email ?? '',
+                                        ),
+                                      )
+                                      .get()
+                                      .then((snapshot) {
+                                        try {
+                                          if (snapshot.exists) {
+                                            secureStorageService.addNewItem(
+                                              "phone",
+                                              snapshot.child("phone").value
+                                                  as String,
+                                            );
+                                          }
+                                          if (value.user?.email ==
+                                              "mariapitangacoimbra@gmail.com") {
+                                            Get.offNamed('/card_adm');
+                                          } else {
+                                            Get.offNamed('/card');
+                                          }
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              backgroundColor: Colors.red,
+                                              content: Text(
+                                                "Erro ao fazer login",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                          debugPrint(
+                                            'Error retrieving phone: $e',
+                                          );
+                                        }
+                                      });
+                                }
+                              });
+                        } on FirebaseException catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                "Erro ao fazer login",
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
+                          debugPrint('FirebaseException: ${e.message}');
+                        }
+                      },
+                    ),
                   ),
-                ),
-                TextButton(
-                  onPressed: () => Get.toNamed('/sign_up'),
-                  child: Text(
-                    'É novo por aqui? Crie uma conta',
-                    style: TextStyle(color: Colors.green, fontSize: 18),
+                  SizedBox(height: 10),
+                  TextButton(
+                    onPressed: showResetPasswordDialog,
+                    child: Text(
+                      'Esqueceu a senha?',
+                      style: TextStyle(color: Colors.green, fontSize: 18),
+                    ),
                   ),
-                ),
-              ],
+                  TextButton(
+                    onPressed: () => Get.toNamed('/sign_up'),
+                    child: Text(
+                      'É novo por aqui? Crie uma conta',
+                      style: TextStyle(color: Colors.green, fontSize: 18),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
+import 'package:maria_pitanga/constants/constants_data.dart';
 import 'package:maria_pitanga/model/card_model.dart';
 import 'package:maria_pitanga/model/my_card_model.dart';
 
@@ -20,8 +21,7 @@ class _LoyaltyCardAdmScreenState extends State<LoyaltyCardAdmScreen> {
   List<CardModel> stamps = [];
   final DatabaseReference _dbRef = FirebaseDatabase.instanceFor(
     app: Firebase.app(),
-    databaseURL:
-        "https://maria-pitanga-e5e82-default-rtdb.europe-west1.firebasedatabase.app",
+    databaseURL: ConstantsData.firebaseUrl,
   ).ref("cards");
 
   final List<String> texts = [

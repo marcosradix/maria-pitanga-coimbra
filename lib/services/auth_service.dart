@@ -41,16 +41,14 @@ class AuthService {
     if (user == null) return;
 
     try {
-      // Try direct delete
       await user.delete();
-      // Optionally: await FirebaseAuth.instance.signOut();
-      // Show success message
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        // Show a dialog or route to a re-auth screen,
-        // then call the appropriate reauth+delete method above.
+        log(
+          'The user must reauthenticate before this operation can be executed.',
+        );
       } else {
-        // Show error
+        log('Delete account error: $e');
       }
     }
   }

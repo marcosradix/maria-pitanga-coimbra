@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -7,9 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:maria_pitanga/constants/constants_data.dart';
 import 'package:maria_pitanga/model/card_model.dart';
 import 'package:maria_pitanga/model/my_card_model.dart';
 import 'package:maria_pitanga/services/auth_service.dart';
+import 'package:maria_pitanga/utils/base64_utils.dart';
 import 'package:maria_pitanga/utils/whats_app_utils.dart';
 
 class LoyaltyCardScreen extends StatefulWidget {
@@ -22,11 +25,12 @@ class LoyaltyCardScreen extends StatefulWidget {
 class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
   // 10 boxes total
   List<CardModel> stamps = [];
+  final String cardsNode = "cards";
+  final String authDataNode = "auth_data";
   final DatabaseReference _dbRef = FirebaseDatabase.instanceFor(
     app: Firebase.app(),
-    databaseURL:
-        "https://maria-pitanga-e5e82-default-rtdb.europe-west1.firebasedatabase.app",
-  ).ref("cards");
+    databaseURL: ConstantsData.firebaseUrl,
+  ).ref();
   late StreamSubscription<DatabaseEvent> _subscription;
   final String? phoneNumber = localStorage.getItem("phone");
   AuthService authService = AuthService();
@@ -47,21 +51,23 @@ class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
   @override
   void initState() {
     if (phoneNumber != null && phoneNumber!.isNotEmpty) {
-      _subscription = _dbRef.child(phoneNumber ?? "").onValue.listen((
-        DatabaseEvent event,
-      ) {
-        final data = event.snapshot.value;
-        if (data != null) {
-          setState(() {
-            MyCardModel cardData = MyCardModel.fromJson(
-              jsonDecode(jsonEncode(data)),
-            );
-            setState(() {
-              stamps = cardData.stamps;
-            });
+      _subscription = _dbRef
+          .child(cardsNode)
+          .child(phoneNumber ?? "")
+          .onValue
+          .listen((DatabaseEvent event) {
+            final data = event.snapshot.value;
+            if (data != null) {
+              setState(() {
+                MyCardModel cardData = MyCardModel.fromJson(
+                  jsonDecode(jsonEncode(data)),
+                );
+                setState(() {
+                  stamps = cardData.stamps;
+                });
+              });
+            }
           });
-        }
-      });
     }
 
     if (stamps.isEmpty) {
@@ -91,13 +97,59 @@ class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
           style: TextStyle(color: Colors.white),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.power_settings_new),
-            onPressed: () {
-              authService.logout().then((_) {
-                Get.toNamed("/login");
-              });
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.menu),
+            onSelected: (value) {
+              switch (value) {
+                case 'exit':
+                  authService.logout().then((_) {
+                    localStorage.clear();
+                    Get.offAllNamed('/login');
+                  });
+                  break;
+                case 'delete':
+                  _dbRef
+                      .child(authDataNode)
+                      .child(
+                        Base64Utils.encode(localStorage.getItem("email") ?? ""),
+                      )
+                      .remove()
+                      .then((_) async {
+                        log("User data deleted successfully.");
+                        await authService.onDeletePressed();
+                        localStorage.clear();
+                        Get.offAllNamed('/login');
+                      })
+                      .catchError((error) {
+                        log("Failed to delete user data: $error");
+                      });
+                  break;
+                default:
+                  break;
+              }
             },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, color: Colors.black54),
+                    SizedBox(width: 8),
+                    Text("Apagar Conta"),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'exit',
+                child: Row(
+                  children: [
+                    Icon(Icons.power_settings_new, color: Colors.black54),
+                    SizedBox(width: 8),
+                    Text("Sair"),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
 
