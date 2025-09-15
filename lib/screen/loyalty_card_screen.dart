@@ -108,21 +108,7 @@ class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
                   });
                   break;
                 case 'delete':
-                  _dbRef
-                      .child(authDataNode)
-                      .child(
-                        Base64Utils.encode(localStorage.getItem("email") ?? ""),
-                      )
-                      .remove()
-                      .then((_) async {
-                        log("User data deleted successfully.");
-                        await authService.onDeletePressed();
-                        localStorage.clear();
-                        Get.offAllNamed('/login');
-                      })
-                      .catchError((error) {
-                        log("Failed to delete user data: $error");
-                      });
+                  showDeleteAccountDialog();
                   break;
                 default:
                   break;
@@ -265,5 +251,54 @@ class _LoyaltyCardScreenState extends State<LoyaltyCardScreen> {
         ),
       ),
     );
+  }
+
+  void showDeleteAccountDialog() {
+    Get.defaultDialog(
+      title: "Apagar Conta",
+      titleStyle: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+        color: Colors.red,
+      ),
+      middleText:
+          "Tem certeza que deseja apagar sua conta?\n\n"
+          "Ao confirmar, sua conta será permanentemente excluída, "
+          "você perderá acesso ao sistema e todos os benefícios vinculados.",
+      middleTextStyle: const TextStyle(fontSize: 16),
+      textCancel: "Cancelar",
+      textConfirm: "Apagar",
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      cancelTextColor: Colors.grey,
+      barrierDismissible: false,
+      onConfirm: () {
+        deleteAccount();
+        Get.snackbar(
+          "Conta apagada",
+          "Sua conta foi excluída com sucesso.",
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      },
+      onCancel: () {},
+    );
+  }
+
+  void deleteAccount() {
+    _dbRef
+        .child(authDataNode)
+        .child(Base64Utils.encode(localStorage.getItem("email") ?? ""))
+        .remove()
+        .then((_) async {
+          log("User data deleted successfully.");
+          await authService.onDeletePressed();
+          localStorage.clear();
+          Get.offAllNamed('/login');
+        })
+        .catchError((error) {
+          log("Failed to delete user data: $error");
+        });
   }
 }
